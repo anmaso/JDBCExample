@@ -1,4 +1,4 @@
-Simple Java class to connect to Oracle database to measure latency
+Simple Java class to connect to Oracle database to check connectivity
 
 It just queries "Select from dual" or can pass your own query as input parameter
 
