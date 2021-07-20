@@ -1,5 +1,3 @@
-
-//STEP 1. Import required packages
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,13 +5,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
-public class JDBCExample {
+public class JDBCTest {
 	static final String JDBC_DRIVER = "oracle.jdbc.OracleDriver";
 	static String DB_URL = "";
 
 	static String USER = "";
 	static String PASS = "";
-
+	static String SQL = "select * from DUAL";
 	static long t0 = new Date().getTime();
 	static long t1 = new Date().getTime();
 
@@ -24,11 +22,15 @@ public class JDBCExample {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("url user pass");
-		System.out.println("ej: jdbc:oracle:thin:@HOST:PORT/SID USER PASS");
+		System.out.println("");
+		System.out.println("JAVA_TOOL_OPTIONS=-Duser.name=<USER> ./jdbctest jdbc:oracle:thin:@<HOST>:<PORT>/<SID> <USER> <PASS> '[QUERY]'");
 		DB_URL = args[0];
 		USER = args[1];
 		PASS = args[2];
+		if (args.length>3) {
+			SQL=args[3];
+		}
+		
 		
 		System.out.println(DB_URL+" "+USER+"/"+PASS);
 		Connection conn = null;
@@ -38,20 +40,10 @@ public class JDBCExample {
 			Class.forName(JDBC_DRIVER);
 			delta("started");
 
-			System.out.println("== Repeated connection ==");
-			for (int i = 0; i < 10; i++) {
+			
 				conn = getConnection();
 				stmt = getStatement(conn);
 				query(stmt);
-
-			}
-
-			System.out.println("== Repeated query ==");
-			for (int i = 0; i < 10; i++) {
-				stmt = getStatement(conn);
-				query(stmt);
-
-			}
 
 		} catch (SQLException se) {
 			// Handle errors for JDBC
@@ -78,12 +70,11 @@ public class JDBCExample {
 
 	private static void query(Statement stmt) throws SQLException {
 
-		String sql = "select * from dual";
-		ResultSet query = stmt.executeQuery(sql);
+		ResultSet query = stmt.executeQuery(SQL);
 		delta("query...");
 		query.next();
 		
-		delta("Database queried successfully..." + query.getString(1) + " ");
+		delta("Database queried successfully..." + query.getObject(1) + " ");
 	}
 
 	private static Statement getStatement(Connection conn) throws SQLException {
@@ -98,4 +89,4 @@ public class JDBCExample {
 		delta("Connecting to database...");
 		return conn;
 	}
-}// end JDBCExample
+}
